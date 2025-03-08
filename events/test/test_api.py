@@ -28,7 +28,22 @@ class EventAPITest(APITestCase):
             max_capacity=100,
             created_by=self.user
         )
+    def test_get_single_event(self):
+        """Test retrieving a single event by ID"""
+        url = f"/api/v1/events/{self.event.id}/"
+        response = self.client.get(url, **self.auth_headers)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["id"], self.event.id)
+        self.assertEqual(response.data["name"], "Django Workshop")
 
+    def test_get_non_existent_event(self):
+        """Test retrieving an event that does not exist"""
+        url = "/api/v1/events/9999/"  # Assuming this ID doesn't exist
+        response = self.client.get(url, **self.auth_headers)
+        
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        
     def test_list_events(self):
         """Test retrieving all events"""
         response = self.client.get("/api/v1/events/", **self.auth_headers)
